@@ -1,0 +1,2 @@
+This project is intended only as a personal project and to stop the introduction of AI everywhere
+
