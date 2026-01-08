@@ -1,13 +1,17 @@
 #include <stdio.h>
-#include "tokenizer.h"
+#include "parser/tokenizer.h"
 void token_init(char *resource);
+char* file_parser(const char* filename);
 Token mktoken();
 int main() {
     // Note: We use a mutable array [], not a pointer *,
     // because the tokenizer modifies the string (inserts \0).
-    char html[] = "<div>Hello World</div>";
+    char filename[]= "parser/test_file.html";
 
-    printf("Parsing: %s\n\n", html); // Warning: this prints only until the first \0 if modified, so we print before init.
+    char* html = file_parser(filename);
+
+
+    printf("Parsing: %s\n\n", filename); // Warning: this prints only until the first \0 if modified, so we print before init.
 
     token_init(html);
 
@@ -19,7 +23,7 @@ int main() {
             printf("[TXT]: %s\n", tok.input);
         }
 
-        t = mktoken();
+        tok = mktoken();
     }
 
     return 0;

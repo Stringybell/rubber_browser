@@ -1,9 +1,40 @@
 #include <string.h>
 #include <stdio.h>
 #include "tokenizer.h"
+#include <stdlib.h>
 
 static char *current_token = NULL;
 static int nx_token = 0;
+
+char* file_parser(const char* filename) {
+    FILE *file = fopen(filename, "r");
+    if (file == NULL) {
+        perror("ERROR: File not found and/or unable to open");
+        return NULL;
+    }
+    fseek(file, 0, SEEK_END);
+    long fsize = ftell(file);
+    fseek(file, 0, SEEK_SET);
+
+    char *buffer = (char*)malloc(fsize + 1);
+    if (buffer == NULL) {
+        perror("ERROR: Memory Allocation");
+        free(buffer);
+        fclose(file);
+        return NULL;
+    }
+    size_t readf = fread(buffer, 1, fsize, file);
+    if (readf != fsize) {
+        perror("ERROR: File read error");
+        free(buffer);
+        fclose(file);
+        return NULL;
+    }
+    buffer[fsize] = '\0';
+    fclose(file);
+    return buffer;
+
+}
 
 struct context {
     char *current_token;
