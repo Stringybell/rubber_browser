@@ -3,9 +3,11 @@
 #define DOM_H
 
 typedef enum{
-    TAG_NODE, // 0: Represents HTML tags such as <div>, <img>, <a>...
-    TEXT_NODE, // 1: Represents text
-    COMMENT_NODE // 2: Parses text without printing it
+    O_TAG_NODE, // 0: Represents HTML tags such as <div>, <img>, <a>...
+    C_TAG_NODE, // 1:Represents closing tags such as </div>, </img>, </a>...
+    TEXT_NODE, // 2: Represents text
+    COMMENT_NODE, // 3: Parses text without printing it
+
 } NodeType;
 
 /*

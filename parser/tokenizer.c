@@ -5,6 +5,7 @@
 static char *current_token = NULL;
 static int nx_token = 0;
 
+
 struct context {
     char *current_token;
 
@@ -13,11 +14,24 @@ struct context {
 void token_init(char *resource) {
     nx_token = 0;
     current_token = resource;
+
+
     if (*current_token == '<') {
-        nx_token = 1;
-        current_token++;
+        if (*(current_token+1) == '/') {
+            nx_token = 2;
+            current_token +=2;
+        }
+        else if (*(current_token+1) == '!') {
+            nx_token = 3;
+            current_token ++;
+        }
+        else {
+            nx_token = 1;
+            current_token++;
+        }
     }
 }
+
 Token mktoken() {
     Token token;
     token.input = NULL;
@@ -28,7 +42,7 @@ Token mktoken() {
     }
     //Check if the Element it's a TAG(1) or TEXT (0)
     if (nx_token == 1) {
-        token.type = TAG_TOKEN;
+        token.type =    O_TAG_TOKEN;
         token.input = current_token;
         //Checks the end of the ELEMENT
         char *end = strchr(current_token, '>');
@@ -50,6 +64,62 @@ Token mktoken() {
 
 
     }
+    else if (nx_token == 2) {
+        token.type =  C_TAG_TOKEN;
+        token.input = current_token;
+        //Checks the end of the ELEMENT
+        char *end = strchr(current_token, '>');
+        if (end != NULL) {
+            *end = '\0';
+            current_token = end + 1; // Moves the pointer 1 after the end of the Tag
+            //Check of the next char and the type of the Element
+            if (*current_token == '<') {
+                current_token++;
+                if (*current_token == '/') {
+                    nx_token = 2;
+                    current_token ++;
+                }else {
+                    nx_token = 1;
+
+                }
+            } else {
+                nx_token = 0;
+            }
+        }
+        else {
+            //Error Handler: If the Tag isn't closed it stops it automatically
+            current_token = NULL;
+        }
+
+    }
+    else if (nx_token == 3) {
+        token.type =  DOCTYPE_TOKEN;
+        token.input = current_token;
+        //Checks the end of the ELEMENT
+        char *end = strchr(current_token, '>');
+        if (end != NULL) {
+            *end = '\0';
+            current_token = end + 1; // Moves the pointer 1 after the end of the Tag
+            //Check of the next char and the type of the Element
+            if (*current_token == '<') {
+                current_token++;
+                if (*current_token == '!') {
+                    nx_token = 3;
+                    current_token ++;
+                }else {
+                    nx_token = 1;
+
+                }
+            } else {
+                nx_token = 0;
+            }
+        }
+        else {
+            //Error Handler: If the Tag isn't closed it stops it automatically
+            current_token = NULL;
+        }
+
+    }
     else {
         token.type = TEXT_TOKEN;
         token.input = current_token;
@@ -58,7 +128,12 @@ Token mktoken() {
         if (end != NULL) {
             *end = '\0'; // End text string
             current_token = end + 1; // Move past the '<'
-            nx_token = 1;
+            if (*current_token == '/') {
+                nx_token = 2;       // It's a Closing Tag
+                current_token++;    // Move past '/'
+            } else {
+                nx_token = 1;       // It's an Opening Tag
+            }
         }else {
             //If no more tags are found everything is parsed as Text
             current_token += strlen(current_token);
