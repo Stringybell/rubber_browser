@@ -4,7 +4,7 @@
 void token_init(char *resource);
 char* file_parser(const char* filename);
 
-Token mktoken();
+Token token_parser();
 
 int main() {
     // Note: We use a mutable array [], not a pointer *,
@@ -18,22 +18,22 @@ int main() {
 
     token_init(html);
 
-    Token tok = mktoken();
-    while (tok.type != END_OF_TOKEN) {
-        if (tok.type == O_TAG_TOKEN ) {
-            printf("[O_TAG]: %s\n", tok.input);
+    Token token = token_parser();
+    while (token.type != END_OF_TOKEN) {
+        if (token.type == O_TAG_TOKEN ) {
+            printf("[O_TAG]: %s\n", token.input);
         }
-        else if (tok.type == C_TAG_TOKEN) {
-            printf("[C_TAG]: %s\n", tok.input);
+        else if (token.type == C_TAG_TOKEN) {
+            printf("[C_TAG]: %s\n", token.input);
         }
-        else if (tok.type == TEXT_TOKEN) {
-            printf("[TXT]: %s\n", tok.input);
+        else if (token.type == TEXT_TOKEN) {
+            printf("[TXT]: %s\n", token.input);
         }
-        else if (tok.type == DOCTYPE_TOKEN) {
-            printf("[DOC]: %s\n", tok.input);
+        else if (token.type == DOCTYPE_TOKEN) {
+            printf("[DOC]: %s\n", token.input);
         }
 
-        tok = mktoken();
+        token = token_parser();
     }
 
     return 0;
